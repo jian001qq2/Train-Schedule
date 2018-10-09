@@ -19,7 +19,7 @@ $("#add-info-btn").on("click", function (event) {
     // Grabs user inputs
     var trainName = $("#train-name-input").val().trim();
     var destinationName = $("#destination-input").val().trim();
-    var firstTime = moment($("#first-time-input").val().trim(), "HH:mm").subtract(2, "years").format("X");
+    var firstTime = moment($("#first-time-input").val().trim(), "HH:mm").format("X");
     var frequency = $("#frequency-input").val().trim();
     //Store variables in the firebase
     //First create a local object for data storage, then push it to firebase's database
@@ -55,8 +55,10 @@ database.ref().on("child_added", function (childSnapshot) {
     var trainFrequency = childSnapshot.val().frequency;
 
     // For train time calculation
+    //First Time (pushed back 2 year to make sure it comes before current time) in a moment object
+    firstTimeConverted=moment.unix(trainTime).subtract(2, "years");
     //How long did the train left
-    var remainder = moment().diff(moment.unix(trainTime), "minutes") % trainFrequency;
+    var remainder = moment().diff(moment(firstTimeConverted,"X"), "minutes") % trainFrequency;
     //How long for the next train to arrive
     var minutes = trainFrequency - remainder;
     //What time will the next train arrive with date for better accuracy
